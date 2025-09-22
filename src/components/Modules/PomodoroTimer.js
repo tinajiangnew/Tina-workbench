@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { PlayIcon, PauseIcon, RotateCcwIcon, SettingsIcon, SaveIcon, BarChartIcon, CalendarIcon, ClockIcon, TargetIcon } from 'lucide-react';
-import { RainbowCard, RainbowInput, RainbowSelect } from '../ui/rainbow-card';
+import { RainbowCard, RainbowInput } from '../ui/rainbow-card';
 import { RainbowButton } from '../ui/rainbow-button';
 
 const PomodoroTimer = () => {
@@ -43,6 +43,8 @@ const PomodoroTimer = () => {
       const parsedSettings = JSON.parse(savedSettings);
       setSettings(parsedSettings);
       setTempSettings(parsedSettings);
+      // 初始化时间
+      setTimeLeft(parsedSettings.workTime * 60);
     }
     
     if (savedPomodoros) {
@@ -53,13 +55,12 @@ const PomodoroTimer = () => {
       const parsedHistory = JSON.parse(savedHistory);
       setSessionHistory(parsedHistory);
     }
-    
-    // 计算统计数据
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 计算统计数据（在组件挂载后执行）
+  useEffect(() => {
     calculateDailyStats();
-    
-    // 初始化时间
-    setTimeLeft(settings.workTime * 60);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 计时器逻辑
   useEffect(() => {
@@ -79,14 +80,14 @@ const PomodoroTimer = () => {
     if (timeLeft === 0 && isRunning) {
       handleSessionComplete();
     }
-  }, [timeLeft, isRunning]);
+  }, [timeLeft, isRunning]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 请求通知权限
   useEffect(() => {
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 会话完成处理
   const handleSessionComplete = () => {
@@ -342,12 +343,6 @@ const PomodoroTimer = () => {
     work: '工作时间',
     shortBreak: '短休息',
     longBreak: '长休息'
-  };
-
-  const sessionColors = {
-    work: 'text-red-600 bg-red-50 border-red-200',
-    shortBreak: 'text-green-600 bg-green-50 border-green-200',
-    longBreak: 'text-blue-600 bg-blue-50 border-blue-200'
   };
 
   return (
