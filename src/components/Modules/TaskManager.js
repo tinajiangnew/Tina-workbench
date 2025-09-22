@@ -254,83 +254,87 @@ const TaskManager = () => {
         </div>
       </div>
 
-      {/* 添加任务表单 */}
-      {showAddForm && (
+      {/* 添加/编辑任务表单 */}
+      {(showAddForm || editingTaskId) && (
         <RainbowCard className="!p-4 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">添加新任务</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">任务标题</label>
-              <RainbowInput
-                type="text"
-                value={newTask.title}
-                onChange={(e) => setNewTask({...newTask, title: e.target.value})}
-                placeholder="输入任务标题"
-              />
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{editingTaskId ? '编辑任务' : '添加新任务'}</h3>
+          <form onSubmit={editingTaskId ? updateTask : addTask}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">任务标题</label>
+                <RainbowInput
+                  type="text"
+                  value={newTask.title}
+                  onChange={(e) => setNewTask({...newTask, title: e.target.value})}
+                  placeholder="输入任务标题"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">负责人</label>
+                <RainbowInput
+                  type="text"
+                  value={newTask.assignee}
+                  onChange={(e) => setNewTask({...newTask, assignee: e.target.value})}
+                  placeholder="输入负责人"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">优先级</label>
+                <RainbowSelect
+                  value={newTask.priority}
+                  onChange={(e) => setNewTask({...newTask, priority: e.target.value})}
+                >
+                  <option value="low">低</option>
+                  <option value="medium">中</option>
+                  <option value="high">高</option>
+                </RainbowSelect>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">状态</label>
+                <RainbowSelect
+                  value={newTask.status}
+                  onChange={(e) => setNewTask({...newTask, status: e.target.value})}
+                >
+                  <option value="pending">待处理</option>
+                  <option value="in-progress">进行中</option>
+                  <option value="completed">已完成</option>
+                </RainbowSelect>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">截止日期</label>
+                <RainbowInput
+                  type="date"
+                  value={newTask.dueDate}
+                  onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">描述</label>
+                <RainbowTextarea
+                  value={newTask.description}
+                  onChange={(e) => setNewTask({...newTask, description: e.target.value})}
+                  placeholder="输入任务描述"
+                  rows="3"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">负责人</label>
-              <RainbowInput
-                type="text"
-                value={newTask.assignee}
-                onChange={(e) => setNewTask({...newTask, assignee: e.target.value})}
-                placeholder="输入负责人"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">优先级</label>
-              <RainbowSelect
-                value={newTask.priority}
-                onChange={(e) => setNewTask({...newTask, priority: e.target.value})}
+            <div className="flex justify-end space-x-2 mt-4">
+              <RainbowButton
+                type="button"
+                onClick={editingTaskId ? cancelEditing : () => setShowAddForm(false)}
+                className="!h-8 !px-4"
               >
-                <option value="low">低</option>
-                <option value="medium">中</option>
-                <option value="high">高</option>
-              </RainbowSelect>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">状态</label>
-              <RainbowSelect
-                value={newTask.status}
-                onChange={(e) => setNewTask({...newTask, status: e.target.value})}
+                取消
+              </RainbowButton>
+              <RainbowButton
+                type="submit"
+                className="!h-8 !px-4"
               >
-                <option value="pending">待处理</option>
-                <option value="in-progress">进行中</option>
-                <option value="completed">已完成</option>
-              </RainbowSelect>
+                {editingTaskId ? '更新任务' : '添加任务'}
+              </RainbowButton>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">截止日期</label>
-              <RainbowInput
-                type="date"
-                value={newTask.dueDate}
-                onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">描述</label>
-              <RainbowTextarea
-                value={newTask.description}
-                onChange={(e) => setNewTask({...newTask, description: e.target.value})}
-                placeholder="输入任务描述"
-                rows="3"
-              />
-            </div>
-          </div>
-          <div className="flex justify-end space-x-2 mt-4">
-            <RainbowButton
-              onClick={() => setShowAddForm(false)}
-              className="!h-8 !px-4"
-            >
-              取消
-            </RainbowButton>
-            <RainbowButton
-              onClick={addTask}
-              className="!h-8 !px-4"
-            >
-              添加任务
-            </RainbowButton>
-          </div>
+          </form>
         </RainbowCard>
       )}
 

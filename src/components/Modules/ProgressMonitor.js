@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { format, parseISO, startOfDay, subDays, isAfter, isBefore, isToday } from 'date-fns';
-import { RainbowCard, RainbowInput, RainbowSelect } from '../ui/rainbow-card';
+import { RainbowCard } from '../ui/rainbow-card';
 import { RainbowButton } from '../ui/rainbow-button';
 
 const ProgressMonitor = () => {

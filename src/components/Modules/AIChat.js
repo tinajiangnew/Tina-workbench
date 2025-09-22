@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { SendIcon, SettingsIcon, PlusIcon, TrashIcon, SaveIcon } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { RainbowButton } from '../ui/rainbow-button';
@@ -20,8 +20,8 @@ const AIChat = () => {
   const [tempModel, setTempModel] = useState('gpt-3.5-turbo');
   const messagesEndRef = useRef(null);
 
-  // AI服务提供商配置
-  const aiProviders = {
+  // AI服务提供商配置 - 使用useMemo避免每次渲染都重新创建
+  const aiProviders = useMemo(() => ({
     openai: {
       name: 'OpenAI',
       endpoint: 'https://api.openai.com/v1/chat/completions',
@@ -53,7 +53,7 @@ const AIChat = () => {
       keyPlaceholder: '请输入API Key',
       keyUrl: ''
     }
-  };
+  }), []);
 
   // 从localStorage加载数据
   useEffect(() => {
@@ -95,7 +95,7 @@ const AIChat = () => {
       setModel(defaultModel);
       setTempModel(defaultModel);
     }
-  }, []);
+  }, [aiProviders]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 当提供商改变时，更新默认模型
   useEffect(() => {
@@ -103,7 +103,7 @@ const AIChat = () => {
       const defaultModel = aiProviders[tempProvider].models[0].value;
       setTempModel(defaultModel);
     }
-  }, [tempProvider]);
+  }, [tempProvider, aiProviders]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 自动滚动到底部
   useEffect(() => {
