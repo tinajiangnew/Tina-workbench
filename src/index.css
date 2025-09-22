@@ -1,0 +1,275 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --color-1: 0 100% 63%;
+    --color-2: 270 100% 63%;
+    --color-3: 210 100% 63%;
+    --color-4: 195 100% 63%;
+    --color-5: 90 100% 63%;
+  }
+  
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    @apply text-gray-900;
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+  }
+  
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+}
+
+@layer components {
+  /* 彩虹模式卡片样式 */
+  .card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6 transition-all duration-200;
+  }
+  
+  .card:hover {
+    @apply shadow-md;
+  }
+  
+  /* 彩虹模式按钮样式 - 已迁移到RainbowButton组件 */
+  .btn-primary {
+    @apply bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium py-2 px-4 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 shadow-lg hover:shadow-xl;
+  }
+  
+  .btn-secondary {
+    @apply bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-gray-900 font-medium py-2 px-4 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 shadow-lg hover:shadow-xl;
+  }
+  
+  /* 彩虹模式输入框样式 - 已迁移到RainbowInput组件 */
+  .input-field {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-gradient-to-r from-white to-gray-50;
+  }
+  
+  /* 彩虹模式侧边栏项目样式 */
+  .sidebar-item {
+    @apply w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 group bg-gradient-to-r from-white to-gray-50 hover:from-purple-50 hover:to-pink-50;
+  }
+  
+  .sidebar-item-active {
+    @apply bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 border border-purple-200 shadow-md;
+  }
+  
+  .sidebar-item-inactive {
+    @apply text-gray-700 hover:from-purple-50 hover:to-pink-50 hover:text-purple-900;
+  }
+  
+  /* 彩虹模式消息气泡样式 */
+  .message-bubble-user {
+    @apply max-w-[70%] rounded-lg p-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg;
+  }
+  
+  .message-bubble-ai {
+    @apply max-w-[70%] rounded-lg p-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-900 shadow-md;
+  }
+  
+  /* 彩虹模式待办事项样式 */
+  .todo-item {
+    @apply group flex items-center space-x-3 p-4 bg-white border rounded-lg transition-all hover:shadow-md bg-gradient-to-r from-white to-gray-50;
+  }
+  
+  .todo-item-completed {
+    @apply border-green-200 bg-gradient-to-r from-green-50 to-emerald-50;
+  }
+  
+  .todo-item-pending {
+    @apply border-gray-200;
+  }
+  
+  /* 彩虹模式笔记项目样式 */
+  .note-item {
+    @apply p-3 rounded-lg cursor-pointer transition-all group bg-gradient-to-r from-white to-gray-50 hover:from-purple-50 hover:to-pink-50;
+  }
+  
+  .note-item-active {
+    @apply bg-gradient-to-r from-purple-100 to-pink-100 border border-purple-200 shadow-md;
+  }
+  
+  .note-item-inactive {
+    @apply hover:from-purple-50 hover:to-pink-50;
+  }
+  
+  /* 彩虹模式加载动画 */
+  .loading-spinner {
+    @apply animate-spin rounded-full h-4 w-4 border-b-2 border-gradient-to-r from-purple-500 to-pink-500;
+  }
+  
+  /* 动态背景动画 */
+  @keyframes blob {
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+  }
+  
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+  
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+  
+  /* 彩虹模式动画效果 */
+  .fade-in {
+    @apply animate-fade-in;
+  }
+  
+  .slide-up {
+    @apply animate-slide-up;
+  }
+}
+
+/* 自定义滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 响应式设计优化 */
+@media (max-width: 768px) {
+  .sidebar {
+    @apply w-16;
+  }
+  
+  .sidebar .sidebar-text {
+    @apply hidden;
+  }
+  
+  .main-content {
+    @apply p-2;
+  }
+  
+  .card {
+    @apply p-4;
+  }
+}
+
+/* 打印样式 */
+@media print {
+  .sidebar,
+  .header {
+    @apply hidden;
+  }
+  
+  .main-content {
+    @apply w-full p-0;
+  }
+}
+
+/* 彩虹模式深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .dark-mode {
+    @apply bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100;
+  }
+  
+  .dark-mode .card {
+    @apply bg-gradient-to-br from-gray-800 to-gray-700 border-gray-600 shadow-xl;
+  }
+  
+  .dark-mode .input-field {
+    @apply bg-gradient-to-r from-gray-800 to-gray-700 border-gray-600 text-gray-100 focus:ring-purple-400;
+  }
+  
+  .dark-mode .btn-primary {
+    @apply bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 focus:ring-purple-400;
+  }
+  
+  .dark-mode .btn-secondary {
+    @apply bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-gray-200 focus:ring-gray-400;
+  }
+  
+  .dark-mode .sidebar-item {
+    @apply bg-gradient-to-r from-gray-800 to-gray-700 hover:from-purple-900 hover:to-pink-900;
+  }
+  
+  .dark-mode .sidebar-item-active {
+    @apply bg-gradient-to-r from-purple-900 to-pink-900 text-purple-300 border-purple-600;
+  }
+  
+  .dark-mode .sidebar-item-inactive {
+    @apply text-gray-300 hover:text-purple-300;
+  }
+  
+  .dark-mode .todo-item {
+    @apply bg-gradient-to-r from-gray-800 to-gray-700 border-gray-600;
+  }
+  
+  .dark-mode .todo-item-completed {
+    @apply bg-gradient-to-r from-green-900 to-emerald-900 border-green-700;
+  }
+  
+  .dark-mode .note-item {
+    @apply bg-gradient-to-r from-gray-800 to-gray-700 hover:from-purple-900 hover:to-pink-900;
+  }
+  
+  .dark-mode .note-item-active {
+    @apply bg-gradient-to-r from-purple-900 to-pink-900 border-purple-600;
+  }
+  
+  .dark-mode .message-bubble-user {
+    @apply bg-gradient-to-r from-purple-600 to-pink-600;
+  }
+  
+  .dark-mode .message-bubble-ai {
+    @apply bg-gradient-to-r from-gray-700 to-gray-600;
+  }
+}
+
+/* 无障碍优化 */
+.focus-visible {
+  @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+}
+
+/* 动画优化 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

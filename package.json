@@ -1,0 +1,69 @@
+{
+  "name": "personal-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "个人高效网页版工作台 - 集成记事本、待办事项、AI对话、番茄钟功能",
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.11.56",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "typescript": "^4.7.4",
+    "web-vitals": "^2.1.4",
+    "react-markdown": "^8.0.7",
+    "remark-gfm": "^3.0.1",
+    "lucide-react": "^0.263.1",
+    "date-fns": "^2.30.0",
+    "uuid": "^9.0.0",
+    "@tailwindcss/typography": "^0.5.9"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.1.8",
+    "postcss": "^8.4.16",
+    "autoprefixer": "^10.4.8"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "dev": "npm start",
+    "preview": "npm run build && npx serve -s build"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "keywords": [
+    "personal-workspace",
+    "productivity",
+    "notes",
+    "todo",
+    "ai-chat",
+    "pomodoro",
+    "react",
+    "tailwindcss"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
