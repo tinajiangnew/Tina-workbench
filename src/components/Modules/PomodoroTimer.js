@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { PlayIcon, PauseIcon, RotateCcwIcon, SettingsIcon, SaveIcon } from 'lucide-react';
+import { PlayIcon, PauseIcon, RotateCcwIcon, SettingsIcon, SaveIcon, BarChartIcon, CalendarIcon, ClockIcon, TargetIcon } from 'lucide-react';
 import { RainbowCard, RainbowInput, RainbowSelect } from '../ui/rainbow-card';
 import { RainbowButton } from '../ui/rainbow-button';
 
@@ -20,11 +20,24 @@ const PomodoroTimer = () => {
   
   const [tempSettings, setTempSettings] = useState(settings);
   const intervalRef = useRef(null);
+  
+  // 统计和历史记录状态
+  const [showStats, setShowStats] = useState(false);
+  const [sessionHistory, setSessionHistory] = useState([]);
+  const [dailyStats, setDailyStats] = useState({
+    today: 0,
+    thisWeek: 0,
+    thisMonth: 0,
+    totalFocusTime: 0,
+    averageSessionLength: 0
+  });
+  const [showCelebration, setShowCelebration] = useState(false);
 
-  // 从localStorage加载设置
+  // 从localStorage加载设置和历史记录
   useEffect(() => {
     const savedSettings = localStorage.getItem('personal-workspace-pomodoro-settings');
     const savedPomodoros = localStorage.getItem('personal-workspace-completed-pomodoros');
+    const savedHistory = localStorage.getItem('personal-workspace-pomodoro-history');
     
     if (savedSettings) {
       const parsedSettings = JSON.parse(savedSettings);
@@ -35,6 +48,14 @@ const PomodoroTimer = () => {
     if (savedPomodoros) {
       setCompletedPomodoros(parseInt(savedPomodoros));
     }
+    
+    if (savedHistory) {
+      const parsedHistory = JSON.parse(savedHistory);
+      setSessionHistory(parsedHistory);
+    }
+    
+    // 计算统计数据
+    calculateDailyStats();
     
     // 初始化时间
     setTimeLeft(settings.workTime * 60);
@@ -72,6 +93,28 @@ const PomodoroTimer = () => {
     setIsRunning(false);
     playNotificationSound();
     showNotification();
+    
+    // 显示庆祝动画
+    if (currentSession === 'work') {
+      setShowCelebration(true);
+      setTimeout(() => setShowCelebration(false), 2000);
+    }
+    
+    // 记录会话历史
+    const sessionRecord = {
+      id: Date.now(),
+      date: new Date().toISOString(),
+      sessionType: currentSession,
+      duration: settings[currentSession === 'work' ? 'workTime' : currentSession === 'shortBreak' ? 'shortBreakTime' : 'longBreakTime'],
+      completed: true
+    };
+    
+    const updatedHistory = [sessionRecord, ...sessionHistory].slice(0, 100); // 保留最近100条记录
+    setSessionHistory(updatedHistory);
+    localStorage.setItem('personal-workspace-pomodoro-history', JSON.stringify(updatedHistory));
+    
+    // 更新统计数据
+    calculateDailyStats();
     
     if (currentSession === 'work') {
       const newCompletedPomodoros = completedPomodoros + 1;
@@ -197,6 +240,104 @@ const PomodoroTimer = () => {
     return ((totalTime - timeLeft) / totalTime) * 100;
   };
 
+  // 添加脉冲动画效果
+  const getTimerAnimation = () => {
+    if (!isRunning) return '';
+    if (timeLeft <= 60 && currentSession === 'work') {
+      return 'animate-pulse';
+    }
+    return '';
+  };
+
+  // 计算每日统计数据
+  const calculateDailyStats = () => {
+    const now = new Date();
+    const today = now.toDateString();
+    const thisWeekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    
+    let todayCount = 0;
+    let thisWeekCount = 0;
+    let thisMonthCount = 0;
+    let totalFocusTime = 0;
+    let workSessions = 0;
+    
+    sessionHistory.forEach(record => {
+      const recordDate = new Date(record.date);
+      const recordDateStr = recordDate.toDateString();
+      
+      if (record.sessionType === 'work') {
+        totalFocusTime += record.duration;
+        workSessions++;
+        
+        if (recordDateStr === today) {
+          todayCount++;
+        }
+        if (recordDate >= thisWeekStart) {
+          thisWeekCount++;
+        }
+        if (recordDate >= thisMonthStart) {
+          thisMonthCount++;
+        }
+      }
+    });
+    
+    setDailyStats({
+      today: todayCount,
+      thisWeek: thisWeekCount,
+      thisMonth: thisMonthCount,
+      totalFocusTime: Math.round(totalFocusTime * 10) / 10,
+      averageSessionLength: workSessions > 0 ? Math.round((totalFocusTime / workSessions) * 10) / 10 : 0
+    });
+  };
+
+  // 格式化日期
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) {
+      return '今天 ' + date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+    } else if (diffDays === 1) {
+      return '昨天 ' + date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+    } else if (diffDays < 7) {
+      return date.toLocaleDateString('zh-CN', { weekday: 'short', hour: '2-digit', minute: '2-digit' });
+    } else {
+      return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+  };
+
+  // 清除历史记录
+  const clearHistory = () => {
+    if (window.confirm('确定要清除所有历史记录吗？此操作不可恢复。')) {
+      setSessionHistory([]);
+      localStorage.removeItem('personal-workspace-pomodoro-history');
+      calculateDailyStats();
+    }
+  };
+
+  // 导出数据
+  const exportData = () => {
+    const data = {
+      history: sessionHistory,
+      stats: dailyStats,
+      settings: settings,
+      exportDate: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pomodoro-data-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const sessionNames = {
     work: '工作时间',
     shortBreak: '短休息',
@@ -215,19 +356,38 @@ const PomodoroTimer = () => {
       <div className="w-full max-w-md mb-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold text-gray-900">🍅 番茄钟</h2>
-          <RainbowButton
-            onClick={() => setShowSettings(true)}
-            className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-            title="设置"
-          >
-            <SettingsIcon size={20} />
-          </RainbowButton>
+          <div className="flex space-x-2">
+            <RainbowButton
+              onClick={() => setShowStats(true)}
+              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+              title="统计"
+            >
+              <BarChartIcon size={20} />
+            </RainbowButton>
+            <RainbowButton
+              onClick={() => setShowSettings(true)}
+              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+              title="设置"
+            >
+              <SettingsIcon size={20} />
+            </RainbowButton>
+          </div>
         </div>
         
         {/* 统计信息 */}
-        <div className="text-center mb-6">
-          <div className="text-sm text-gray-600 mb-2">今日完成番茄钟</div>
-          <div className="text-3xl font-bold text-primary-600">{completedPomodoros}</div>
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="text-center">
+            <div className="text-sm text-gray-600 mb-1">今日</div>
+            <div className="text-2xl font-bold text-primary-600">{dailyStats.today}</div>
+          </div>
+          <div className="text-center">
+            <div className="text-sm text-gray-600 mb-1">本周</div>
+            <div className="text-2xl font-bold text-green-600">{dailyStats.thisWeek}</div>
+          </div>
+          <div className="text-center">
+            <div className="text-sm text-gray-600 mb-1">本月</div>
+            <div className="text-2xl font-bold text-blue-600">{dailyStats.thisMonth}</div>
+          </div>
         </div>
       </div>
 
@@ -262,67 +422,94 @@ const PomodoroTimer = () => {
           
           {/* 时间显示 */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className="text-4xl font-mono font-bold text-gray-900 mb-2">
+            <div className={`text-7xl font-mono font-bold mb-2 transition-colors duration-500 ${
+              currentSession === 'work' ? 'text-red-600' : 
+              currentSession === 'shortBreak' ? 'text-green-600' : 'text-blue-600'
+            } ${getTimerAnimation()}`}>
               {formatTime(timeLeft)}
             </div>
             <div className={`px-3 py-1 rounded-full text-sm font-medium border ${sessionColors[currentSession]}`}>
               {sessionNames[currentSession]}
+            </div>
+            <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 mt-2">
+              <span>第 {completedPomodoros + 1} 个番茄钟</span>
+              <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
+              <span>{completedPomodoros} 个已完成</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* 控制按钮 */}
-      <div className="flex items-center space-x-4 mb-8">
+      <div className="flex justify-center space-x-4 mb-8">
         <RainbowButton
           onClick={toggleTimer}
-          className={`w-16 h-16 rounded-full flex items-center justify-center text-white transition-colors ${
-            isRunning ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-500 hover:bg-green-600'
+          className={`flex items-center space-x-3 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 ${
+            isRunning 
+              ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-white' 
+              : 'bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white'
           }`}
         >
           {isRunning ? <PauseIcon size={24} /> : <PlayIcon size={24} />}
+          <span>{isRunning ? '暂停' : '开始'}</span>
         </RainbowButton>
         
         <RainbowButton
           onClick={resetTimer}
-          className="w-12 h-12 rounded-full bg-gray-500 hover:bg-gray-600 text-white flex items-center justify-center transition-colors"
+          className="flex items-center space-x-3 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 bg-gradient-to-r from-gray-400 to-gray-600 hover:from-gray-500 hover:to-gray-700 text-white"
           title="重置"
         >
-          <RotateCcwIcon size={20} />
+          <RotateCcwIcon size={24} />
+          <span>重置</span>
         </RainbowButton>
       </div>
 
-      {/* 会话切换按钮 */}
-      <div className="flex space-x-2">
+      {/* 会话类型切换 */}
+      <div className="flex justify-center space-x-3 mb-8">
         <RainbowButton
           onClick={() => switchSession('work')}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
             currentSession === 'work'
-              ? 'bg-red-500 text-white ring-2 ring-red-500'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              ? 'bg-gradient-to-r from-red-400 to-red-600 text-white shadow-lg'
+              : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-red-300 hover:bg-red-50'
           }`}
         >
-          工作
+          <span className="flex items-center">
+            <span className={`w-2 h-2 rounded-full mr-2 ${
+              currentSession === 'work' ? 'bg-white' : 'bg-red-500'
+            }`}></span>
+            工作
+          </span>
         </RainbowButton>
         <RainbowButton
           onClick={() => switchSession('shortBreak')}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
             currentSession === 'shortBreak'
-              ? 'bg-green-500 text-white ring-2 ring-green-500'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              ? 'bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg'
+              : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-green-300 hover:bg-green-50'
           }`}
         >
-          短休息
+          <span className="flex items-center">
+            <span className={`w-2 h-2 rounded-full mr-2 ${
+              currentSession === 'shortBreak' ? 'bg-white' : 'bg-green-500'
+            }`}></span>
+            短休息
+          </span>
         </RainbowButton>
         <RainbowButton
           onClick={() => switchSession('longBreak')}
-          className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
             currentSession === 'longBreak'
-              ? 'bg-blue-500 text-white ring-2 ring-blue-500'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              ? 'bg-gradient-to-r from-blue-400 to-blue-600 text-white shadow-lg'
+              : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
           }`}
         >
-          长休息
+          <span className="flex items-center">
+            <span className={`w-2 h-2 rounded-full mr-2 ${
+              currentSession === 'longBreak' ? 'bg-white' : 'bg-blue-500'
+            }`}></span>
+            长休息
+          </span>
         </RainbowButton>
       </div>
 
@@ -409,6 +596,121 @@ const PomodoroTimer = () => {
               </RainbowButton>
             </div>
           </RainbowCard>
+        </div>
+      )}
+
+      {/* 统计弹窗 */}
+      {showStats && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <RainbowCard className="!p-6 w-[500px] max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold flex items-center">
+                <BarChartIcon className="mr-2" size={20} />
+                番茄钟统计
+              </h3>
+              <div className="flex space-x-2">
+                <RainbowButton
+                  onClick={exportData}
+                  className="p-2 text-gray-600 hover:text-gray-800"
+                  title="导出数据"
+                >
+                  <TargetIcon size={16} />
+                </RainbowButton>
+                <RainbowButton
+                  onClick={clearHistory}
+                  className="p-2 text-red-600 hover:text-red-800"
+                  title="清除历史"
+                >
+                  <RotateCcwIcon size={16} />
+                </RainbowButton>
+              </div>
+            </div>
+            
+            {/* 统计概览 */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="text-center p-3 bg-blue-50 rounded-lg">
+                <ClockIcon className="mx-auto mb-2 text-blue-600" size={24} />
+                <div className="text-sm text-gray-600">总专注时间</div>
+                <div className="text-xl font-bold text-blue-600">{dailyStats.totalFocusTime}h</div>
+              </div>
+              <div className="text-center p-3 bg-green-50 rounded-lg">
+                <TargetIcon className="mx-auto mb-2 text-green-600" size={24} />
+                <div className="text-sm text-gray-600">平均时长</div>
+                <div className="text-xl font-bold text-green-600">{dailyStats.averageSessionLength}h</div>
+              </div>
+            </div>
+            
+            {/* 详细统计 */}
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                <span className="text-sm text-gray-600">今日完成</span>
+                <span className="font-semibold">{dailyStats.today} 个</span>
+              </div>
+              <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                <span className="text-sm text-gray-600">本周完成</span>
+                <span className="font-semibold">{dailyStats.thisWeek} 个</span>
+              </div>
+              <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                <span className="text-sm text-gray-600">本月完成</span>
+                <span className="font-semibold">{dailyStats.thisMonth} 个</span>
+              </div>
+            </div>
+            
+            {/* 最近记录 */}
+            <div className="mb-4">
+              <h4 className="text-md font-medium mb-3 flex items-center">
+                <CalendarIcon className="mr-2" size={16} />
+                最近记录
+              </h4>
+              <div className="space-y-2 max-h-40 overflow-y-auto">
+                {sessionHistory.length === 0 ? (
+                  <p className="text-gray-500 text-center py-4">暂无记录</p>
+                ) : (
+                  sessionHistory.slice(0, 10).map((record) => (
+                    <div key={record.id} className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm">
+                      <div className="flex items-center">
+                        <span className={`w-2 h-2 rounded-full mr-2 ${
+                          record.sessionType === 'work' ? 'bg-red-500' : 
+                          record.sessionType === 'shortBreak' ? 'bg-green-500' : 'bg-blue-500'
+                        }`}></span>
+                        <span>
+                          {record.sessionType === 'work' ? '工作' : 
+                           record.sessionType === 'shortBreak' ? '短休息' : '长休息'}
+                        </span>
+                      </div>
+                      <div className="text-gray-600">
+                        <span className="mr-2">{record.duration}分钟</span>
+                        <span className="text-xs">{formatDate(record.date)}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+            
+            <div className="flex justify-end">
+              <RainbowButton
+                onClick={() => setShowStats(false)}
+                className="btn-secondary"
+              >
+                关闭
+              </RainbowButton>
+            </div>
+          </RainbowCard>
+        </div>
+      )}
+
+      {/* 庆祝动画 */}
+      {showCelebration && (
+        <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-40">
+          <div className="text-6xl animate-bounce">
+            🎉
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-2xl font-bold text-green-600 animate-pulse">
+              完成！
+            </div>
+          </div>
         </div>
       )}
     </div>
