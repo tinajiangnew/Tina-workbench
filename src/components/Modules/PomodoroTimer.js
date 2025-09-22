@@ -391,124 +391,157 @@ const PomodoroTimer = () => {
         </div>
       </div>
 
-      {/* 主计时器 */}
+      {/* 主计时器 - 玻璃态设计 */}
       <div className="relative mb-8">
-        {/* 圆形进度条 */}
-        <div className="relative w-64 h-64">
-          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-            {/* 背景圆 */}
+        {/* 圆形进度条 - 玻璃态效果 */}
+        <div className="relative w-72 h-72">
+          {/* 外层玻璃光环 */}
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-sm border border-white/30 shadow-2xl"></div>
+          
+          <svg className="w-full h-full transform -rotate-90 relative z-10" viewBox="0 0 100 100">
+            {/* 背景圆 - 玻璃态 */}
             <circle
               cx="50"
               cy="50"
-              r="45"
-              stroke="#e5e7eb"
-              strokeWidth="8"
+              r="44"
+              stroke="rgba(255,255,255,0.2)"
+              strokeWidth="3"
               fill="none"
+              className="drop-shadow-sm"
             />
-            {/* 进度圆 */}
+            {/* 进度圆 - 渐变色彩 */}
             <circle
               cx="50"
               cy="50"
-              r="45"
-              stroke={currentSession === 'work' ? '#ef4444' : currentSession === 'shortBreak' ? '#10b981' : '#3b82f6'}
-              strokeWidth="8"
+              r="44"
+              stroke={currentSession === 'work' ? 'url(#workGradient)' : currentSession === 'shortBreak' ? 'url(#breakGradient)' : 'url(#longBreakGradient)'}
+              strokeWidth="4"
               fill="none"
               strokeLinecap="round"
-              strokeDasharray={`${2 * Math.PI * 45}`}
-              strokeDashoffset={`${2 * Math.PI * 45 * (1 - getProgress() / 100)}`}
-              className="transition-all duration-1000 ease-linear"
+              strokeDasharray={`${2 * Math.PI * 44}`}
+              strokeDashoffset={`${2 * Math.PI * 44 * (1 - getProgress() / 100)}`}
+              className="transition-all duration-1000 ease-linear drop-shadow-lg"
             />
+            {/* SVG渐变定义 */}
+            <defs>
+              <linearGradient id="workGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#ff6b6b" />
+                <stop offset="100%" stopColor="#ff8e8e" />
+              </linearGradient>
+              <linearGradient id="breakGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#4ecdc4" />
+                <stop offset="100%" stopColor="#6bcf7f" />
+              </linearGradient>
+              <linearGradient id="longBreakGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#45b7d1" />
+                <stop offset="100%" stopColor="#6c5ce7" />
+              </linearGradient>
+            </defs>
           </svg>
           
-          {/* 时间显示 */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className={`text-7xl font-mono font-bold mb-2 transition-colors duration-500 ${
-              currentSession === 'work' ? 'text-red-600' : 
-              currentSession === 'shortBreak' ? 'text-green-600' : 'text-blue-600'
-            } ${getTimerAnimation()}`}>
+          {/* 内层玻璃态圆环 */}
+          <div className="absolute inset-4 rounded-full bg-gradient-to-br from-white/40 to-white/10 backdrop-blur-md border border-white/40 shadow-inner"></div>
+          
+          {/* 时间显示 - 玻璃态效果 */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
+            <div className={`text-6xl font-bold mb-3 bg-gradient-to-br ${
+              currentSession === 'work' ? 'from-red-400 to-red-600' : 
+              currentSession === 'shortBreak' ? 'from-green-400 to-green-600' : 'from-blue-400 to-blue-600'
+            } bg-clip-text text-transparent drop-shadow-lg ${getTimerAnimation()}`}>
               {formatTime(timeLeft)}
             </div>
-            <div className={`px-3 py-1 rounded-full text-sm font-medium border ${sessionColors[currentSession]}`}>
+            <div className={`px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-sm border ${
+              currentSession === 'work' 
+                ? 'bg-red-500/20 text-red-800 border-red-300/50 shadow-lg' 
+                : currentSession === 'shortBreak' 
+                ? 'bg-green-500/20 text-green-800 border-green-300/50 shadow-lg'
+                : 'bg-blue-500/20 text-blue-800 border-blue-300/50 shadow-lg'
+            }`}>
               {sessionNames[currentSession]}
             </div>
-            <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 mt-2">
-              <span>第 {completedPomodoros + 1} 个番茄钟</span>
+            <div className="flex items-center justify-center space-x-3 text-sm text-gray-600 mt-3 backdrop-blur-sm bg-white/30 px-3 py-1 rounded-full">
+              <span className="font-medium">第 {completedPomodoros + 1} 个</span>
               <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
-              <span>{completedPomodoros} 个已完成</span>
+              <span className="font-medium">{completedPomodoros} 完成</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 控制按钮 */}
-      <div className="flex justify-center space-x-4 mb-8">
+      {/* 控制按钮 - 玻璃态设计 */}
+      <div className="flex justify-center space-x-6 mb-8">
         <RainbowButton
           onClick={toggleTimer}
-          className={`flex items-center space-x-3 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 ${
+          className={`flex items-center space-x-4 px-10 py-5 text-lg font-bold rounded-2xl shadow-2xl transform transition-all duration-300 hover:scale-105 backdrop-blur-sm border ${
             isRunning 
-              ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-white' 
-              : 'bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white'
+              ? 'bg-gradient-to-r from-yellow-400/80 to-orange-500/80 hover:from-yellow-500/90 hover:to-orange-600/90 text-white border-yellow-300/50 shadow-yellow-500/25' 
+              : 'bg-gradient-to-r from-green-400/80 to-emerald-500/80 hover:from-green-500/90 hover:to-emerald-600/90 text-white border-green-300/50 shadow-green-500/25'
           }`}
         >
-          {isRunning ? <PauseIcon size={24} /> : <PlayIcon size={24} />}
-          <span>{isRunning ? '暂停' : '开始'}</span>
+          <div className="p-2 rounded-full bg-white/20 backdrop-blur-sm">
+            {isRunning ? <PauseIcon size={28} /> : <PlayIcon size={28} />}
+          </div>
+          <span className="tracking-wide">{isRunning ? '暂停' : '开始'}</span>
         </RainbowButton>
         
         <RainbowButton
           onClick={resetTimer}
-          className="flex items-center space-x-3 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105 bg-gradient-to-r from-gray-400 to-gray-600 hover:from-gray-500 hover:to-gray-700 text-white"
+          className="flex items-center space-x-4 px-10 py-5 text-lg font-bold rounded-2xl shadow-2xl transform transition-all duration-300 hover:scale-105 bg-gradient-to-r from-slate-400/80 to-slate-600/80 hover:from-slate-500/90 hover:to-slate-700/90 text-white border-slate-300/50 shadow-slate-500/25 backdrop-blur-sm"
           title="重置"
         >
-          <RotateCcwIcon size={24} />
-          <span>重置</span>
+          <div className="p-2 rounded-full bg-white/20 backdrop-blur-sm">
+            <RotateCcwIcon size={28} />
+          </div>
+          <span className="tracking-wide">重置</span>
         </RainbowButton>
       </div>
 
       {/* 会话类型切换 */}
-      <div className="flex justify-center space-x-3 mb-8">
+      {/* 会话类型选择 - 玻璃态设计 */}
+      <div className="flex justify-center space-x-4 mb-8">
         <RainbowButton
           onClick={() => switchSession('work')}
-          className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
+          className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 backdrop-blur-sm border ${
             currentSession === 'work'
-              ? 'bg-gradient-to-r from-red-400 to-red-600 text-white shadow-lg'
-              : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-red-300 hover:bg-red-50'
+              ? 'bg-gradient-to-r from-red-500/90 to-rose-600/90 text-white shadow-2xl scale-105 border-red-300/50 shadow-red-500/30'
+              : 'bg-white/20 hover:bg-white/30 text-gray-200 hover:text-white border-white/20 hover:border-white/40 shadow-lg hover:shadow-xl'
           }`}
         >
-          <span className="flex items-center">
-            <span className={`w-2 h-2 rounded-full mr-2 ${
-              currentSession === 'work' ? 'bg-white' : 'bg-red-500'
+          <span className="flex items-center space-x-3">
+            <span className={`w-4 h-4 rounded-full transition-all duration-300 ${
+              currentSession === 'work' ? 'bg-white shadow-lg shadow-white/50 scale-110' : 'bg-red-500 shadow-md'
             }`}></span>
-            工作
+            <span className="tracking-wide">工作</span>
           </span>
         </RainbowButton>
         <RainbowButton
           onClick={() => switchSession('shortBreak')}
-          className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
+          className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 backdrop-blur-sm border ${
             currentSession === 'shortBreak'
-              ? 'bg-gradient-to-r from-green-400 to-green-600 text-white shadow-lg'
-              : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-green-300 hover:bg-green-50'
+              ? 'bg-gradient-to-r from-green-500/90 to-emerald-600/90 text-white shadow-2xl scale-105 border-green-300/50 shadow-green-500/30'
+              : 'bg-white/20 hover:bg-white/30 text-gray-200 hover:text-white border-white/20 hover:border-white/40 shadow-lg hover:shadow-xl'
           }`}
         >
-          <span className="flex items-center">
-            <span className={`w-2 h-2 rounded-full mr-2 ${
-              currentSession === 'shortBreak' ? 'bg-white' : 'bg-green-500'
+          <span className="flex items-center space-x-3">
+            <span className={`w-4 h-4 rounded-full transition-all duration-300 ${
+              currentSession === 'shortBreak' ? 'bg-white shadow-lg shadow-white/50 scale-110' : 'bg-green-500 shadow-md'
             }`}></span>
-            短休息
+            <span className="tracking-wide">短休息</span>
           </span>
         </RainbowButton>
         <RainbowButton
           onClick={() => switchSession('longBreak')}
-          className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
+          className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 backdrop-blur-sm border ${
             currentSession === 'longBreak'
-              ? 'bg-gradient-to-r from-blue-400 to-blue-600 text-white shadow-lg'
-              : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+              ? 'bg-gradient-to-r from-blue-500/90 to-indigo-600/90 text-white shadow-2xl scale-105 border-blue-300/50 shadow-blue-500/30'
+              : 'bg-white/20 hover:bg-white/30 text-gray-200 hover:text-white border-white/20 hover:border-white/40 shadow-lg hover:shadow-xl'
           }`}
         >
-          <span className="flex items-center">
-            <span className={`w-2 h-2 rounded-full mr-2 ${
-              currentSession === 'longBreak' ? 'bg-white' : 'bg-blue-500'
+          <span className="flex items-center space-x-3">
+            <span className={`w-4 h-4 rounded-full transition-all duration-300 ${
+              currentSession === 'longBreak' ? 'bg-white shadow-lg shadow-white/50 scale-110' : 'bg-blue-500 shadow-md'
             }`}></span>
-            长休息
+            <span className="tracking-wide">长休息</span>
           </span>
         </RainbowButton>
       </div>
