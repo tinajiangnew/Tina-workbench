@@ -4,16 +4,17 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Build outputs
-build/
-dist/
+# Development files only (build/ is needed for deployment)
+src/**/*.test.js
+src/**/*.test.jsx
+src/**/*.test.ts
+src/**/*.test.tsx
+coverage/
 
-# Environment files
-.env
+# Environment files (keep production env)
 .env.local
 .env.development.local
 .env.test.local
-.env.production.local
 
 # IDE files
 .vscode/
@@ -34,17 +35,11 @@ Thumbs.db
 logs/
 *.log
 
-# Runtime data
-pids/
-*.pid
-*.seed
-*.pid.lock
-
-# Optional npm cache directory
+# Cache directories
 .npm
-
-# Optional eslint cache
 .eslintcache
+.cache
+.parcel-cache
 
 # Optional REPL history
 .node_repl_history
@@ -54,28 +49,3 @@ pids/
 
 # Yarn Integrity file
 .yarn-integrity
-
-# dotenv environment variables file
-.env
-
-# parcel-bundler cache (https://parceljs.org/)
-.cache
-.parcel-cache
-
-# next.js build output
-.next
-
-# nuxt.js build output
-.nuxt
-
-# vuepress build output
-.vuepress/dist
-
-# Serverless directories
-.serverless
-
-# FuseBox cache
-.fusebox/
-
-# DynamoDB Local files
-.dynamodb/
