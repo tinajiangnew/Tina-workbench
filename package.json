@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "homepage": "./",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
   "description": "个人高效网页版工作台 - 集成记事本、待办事项、AI对话、番茄钟功能",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
