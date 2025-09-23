@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "./",
   "engines": {
-    "node": "18.x"
+    "node": "18.19.0"
   },
   "description": "个人高效网页版工作台 - 集成记事本、待办事项、AI对话、番茄钟功能",
   "dependencies": {
