@@ -182,6 +182,7 @@ export const AuthProvider = ({ children }) => {
     tenant,
     session,
     loading,
+    configError,
     signUp,
     signIn,
     signOut,
