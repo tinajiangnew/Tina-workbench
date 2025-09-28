@@ -203,7 +203,7 @@ const TaskManager = () => {
   };
 
   return (
-    <div className="h-full flex flex-col p-6">
+    <RainbowCard className="h-full flex flex-col p-6">
       {/* 头部 */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -500,7 +500,7 @@ const TaskManager = () => {
           </div>
         )}
       </div>
-    </div>
+    </RainbowCard>
   );
 };
 

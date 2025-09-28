@@ -346,7 +346,7 @@ const PomodoroTimer = () => {
   };
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-6">
+    <RainbowCard className="h-full flex flex-col items-center justify-center p-6">
       {/* 头部 */}
       <div className="w-full max-w-md mb-8">
         <div className="flex items-center justify-between mb-4">
@@ -741,7 +741,7 @@ const PomodoroTimer = () => {
           </div>
         </div>
       )}
-    </div>
+    </RainbowCard>
   );
 };
 

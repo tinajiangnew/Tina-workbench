@@ -134,7 +134,7 @@ const ProgressMonitor = () => {
   const weeklyTrend = getWeeklyTrend();
 
   return (
-    <div className="h-full flex flex-col p-6">
+    <RainbowCard className="h-full flex flex-col p-6">
       {/* 头部 */}
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">📈 进度监控</h2>
@@ -353,7 +353,7 @@ const ProgressMonitor = () => {
           <p className="text-sm">支持按负责人、项目维度汇总工时和进度</p>
         </div>
       </RainbowCard>
-    </div>
+    </RainbowCard>
   );
 };
 

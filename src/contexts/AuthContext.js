@@ -26,18 +26,28 @@ export const AuthProvider = ({ children }) => {
       return
     }
 
-    // 设置加载超时
+    // 设置加载超时 - 减少到5秒
     const loadingTimeout = setTimeout(() => {
       console.warn('Auth loading timeout, setting loading to false')
       setLoading(false)
-    }, 10000) // 10秒超时
+    }, 5000) // 5秒超时
 
     // 获取初始会话
     const getInitialSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession()
+        // 添加网络超时检查
+        const sessionPromise = supabase.auth.getSession()
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Network timeout')), 3000)
+        )
+        
+        const { data: { session }, error } = await Promise.race([sessionPromise, timeoutPromise])
+        
         if (error) {
           console.error('Error getting session:', error)
+          // 网络错误时，直接设置为未登录状态
+          setSession(null)
+          setUser(null)
         } else {
           setSession(session)
           setUser(session?.user ?? null)
@@ -55,6 +65,10 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (error) {
         console.error('Error initializing auth:', error)
+        // 发生任何错误时，设置为未登录状态
+        setSession(null)
+        setUser(null)
+        setTenant(null)
       } finally {
         clearTimeout(loadingTimeout)
         setLoading(false)

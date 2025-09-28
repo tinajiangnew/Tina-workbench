@@ -111,7 +111,7 @@ const TodoList = () => {
   const pendingTasks = totalTasks - completedTasks;
 
   return (
-    <div className="h-full flex flex-col p-6">
+    <RainbowCard className="h-full flex flex-col p-6">
       {/* 头部 */}
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">✅ 待办事项</h2>
@@ -303,7 +303,7 @@ const TodoList = () => {
           )}
         </div>
       )}
-    </div>
+    </RainbowCard>
   );
 };
 

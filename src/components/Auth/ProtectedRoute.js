@@ -18,6 +18,7 @@ const ProtectedRoute = ({ children }) => {
           </div>
           <p className="text-gray-700 text-lg font-medium mb-2">正在初始化...</p>
           <p className="text-gray-500 text-sm">请稍候，正在加载您的工作台</p>
+          <p className="text-gray-400 text-xs mt-2">如果长时间无响应，请刷新页面</p>
           <div className="mt-4 flex justify-center space-x-1">
             <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
             <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
