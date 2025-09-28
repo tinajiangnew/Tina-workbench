@@ -10,11 +10,11 @@ export function RainbowButton({ children, className, ...props }) {
         // before styles
         "before:absolute before:bottom-[-20%] before:left-1/2 before:z-0 before:h-1/5 before:w-3/5 before:-translate-x-1/2 before:animate-rainbow before:bg-[linear-gradient(90deg,hsl(var(--color-1)),hsl(var(--color-5)),hsl(var(--color-3)),hsl(var(--color-4)),hsl(var(--color-2)))] before:bg-[length:200%] before:[filter:blur(calc(0.8*1rem))]",
 
-        // light mode colors - 淡雅紫色调
-        "bg-[linear-gradient(rgba(139,92,246,0.9),rgba(139,92,246,0.9)),linear-gradient(rgba(139,92,246,0.9)_50%,rgba(139,92,246,0.6)_80%,rgba(139,92,246,0)),linear-gradient(90deg,hsl(var(--color-1)),hsl(var(--color-5)),hsl(var(--color-3)),hsl(var(--color-4)),hsl(var(--color-2)))]",
+        // light mode colors
+        "bg-[linear-gradient(#121213,#121213),linear-gradient(#121213_50%,rgba(18,18,19,0.6)_80%,rgba(18,18,19,0)),linear-gradient(90deg,hsl(var(--color-1)),hsl(var(--color-5)),hsl(var(--color-3)),hsl(var(--color-4)),hsl(var(--color-2)))]",
 
-        // dark mode colors - 保持优雅的白色调
-        "dark:bg-[linear-gradient(rgba(248,250,252,0.95),rgba(248,250,252,0.95)),linear-gradient(rgba(248,250,252,0.95)_50%,rgba(248,250,252,0.7)_80%,rgba(248,250,252,0)),linear-gradient(90deg,hsl(var(--color-1)),hsl(var(--color-5)),hsl(var(--color-3)),hsl(var(--color-4)),hsl(var(--color-2)))]",
+        // dark mode colors
+        "dark:bg-[linear-gradient(#fff,#fff),linear-gradient(#fff_50%,rgba(255,255,255,0.6)_80%,rgba(0,0,0,0)),linear-gradient(90deg,hsl(var(--color-1)),hsl(var(--color-5)),hsl(var(--color-3)),hsl(var(--color-4)),hsl(var(--color-2)))]",
 
         className
       )}
