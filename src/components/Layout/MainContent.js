@@ -6,6 +6,7 @@ import PomodoroTimer from '../Modules/PomodoroTimer';
 import TaskManager from '../Modules/TaskManager';
 import ProgressMonitor from '../Modules/ProgressMonitor';
 import { RainbowCard } from '../ui/rainbow-card';
+import { AuroraBackgroundDemo } from '../ui/aurora-background-demo.tsx';
 
 const MainContent = ({ activeModule }) => {
   const renderContent = () => {
@@ -73,6 +74,8 @@ const MainContent = ({ activeModule }) => {
         return <AIChat />;
       case 'pomodoro':
         return <PomodoroTimer />;
+      case 'aurora':
+        return <AuroraBackgroundDemo />;
       default:
         return (
           <div className="p-8 text-center">
@@ -86,7 +89,10 @@ const MainContent = ({ activeModule }) => {
   return (
     <main className="flex-1 overflow-hidden">
       <div className="h-full">
-        {activeModule === 'notes' || activeModule === 'chat' ? (
+        {activeModule === 'aurora' ? (
+          // Aurora module takes full screen without RainbowCard wrapper
+          renderContent()
+        ) : activeModule === 'notes' || activeModule === 'chat' ? (
           <RainbowCard className="h-full overflow-hidden">
             {renderContent()}
           </RainbowCard>

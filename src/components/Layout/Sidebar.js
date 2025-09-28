@@ -45,6 +45,12 @@ const Sidebar = ({ activeModule, onModuleChange }) => {
       name: '番茄钟',
       icon: '🍅',
       description: '专注计时'
+    },
+    {
+      id: 'aurora',
+      name: 'Aurora背景',
+      icon: '🌌',
+      description: '极光背景效果'
     }
   ];
 
