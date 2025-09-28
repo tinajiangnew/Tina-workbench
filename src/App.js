@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/Auth/ProtectedRoute';
 import Header from './components/Layout/Header';
 import Sidebar from './components/Layout/Sidebar';
 import MainContent from './components/Layout/MainContent';
@@ -10,26 +12,30 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AnimatedBackground />
-      <div className="relative z-10">
-        <Header 
-          onOpenSettings={() => setShowSettings(true)}
-          showSettings={showSettings}
-        />
-        <div className="flex h-[calc(100vh-4rem)]">
-          <Sidebar 
-            activeModule={activeModule}
-            onModuleChange={setActiveModule}
-          />
-          <MainContent 
-            activeModule={activeModule}
-            showSettings={showSettings}
-            onCloseSettings={() => setShowSettings(false)}
-          />
+    <AuthProvider>
+      <div className="min-h-screen bg-gray-50">
+        <AnimatedBackground />
+        <div className="relative z-10">
+          <ProtectedRoute>
+            <Header 
+              onOpenSettings={() => setShowSettings(true)}
+              showSettings={showSettings}
+            />
+            <div className="flex h-[calc(100vh-4rem)]">
+              <Sidebar 
+                activeModule={activeModule}
+                onModuleChange={setActiveModule}
+              />
+              <MainContent 
+                activeModule={activeModule}
+                showSettings={showSettings}
+                onCloseSettings={() => setShowSettings(false)}
+              />
+            </div>
+          </ProtectedRoute>
         </div>
       </div>
-    </div>
+    </AuthProvider>
   );
 }
 

@@ -6,11 +6,11 @@
 
 @layer base {
   :root {
-    --color-1: 0 100% 63%;
-    --color-2: 270 100% 63%;
-    --color-3: 210 100% 63%;
-    --color-4: 195 100% 63%;
-    --color-5: 90 100% 63%;
+    --color-1: 320 45% 75%;  /* 柔和的玫瑰粉 */
+    --color-2: 280 40% 70%;  /* 淡雅的薰衣草紫 */
+    --color-3: 260 35% 75%;  /* 温和的紫罗兰 */
+    --color-4: 240 30% 80%;  /* 轻柔的天空蓝 */
+    --color-5: 300 35% 78%;  /* 优雅的兰花紫 */
   }
   
   html {
@@ -19,6 +19,7 @@
   
   body {
     @apply text-gray-900;
+    background: linear-gradient(-45deg, #f3e8ff, #e9d5ff, #ddd6fe, #c4b5fd);
     background-size: 400% 400%;
     animation: gradient 15s ease infinite;
   }
