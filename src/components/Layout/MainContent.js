@@ -5,8 +5,6 @@ import AIChat from '../Modules/AIChat';
 import PomodoroTimer from '../Modules/PomodoroTimer';
 import TaskManager from '../Modules/TaskManager';
 import ProgressMonitor from '../Modules/ProgressMonitor';
-import AdminPanel from '../Admin/AdminPanel';
-import AdminSetup from '../Admin/AdminSetup';
 import { RainbowCard } from '../ui/rainbow-card';
 
 const MainContent = ({ activeModule }) => {
@@ -75,10 +73,6 @@ const MainContent = ({ activeModule }) => {
         return <AIChat />;
       case 'pomodoro':
         return <PomodoroTimer />;
-      case 'admin':
-        return <AdminPanel />;
-      case 'admin-setup':
-        return <AdminSetup />;
       default:
         return (
           <div className="p-8 text-center">

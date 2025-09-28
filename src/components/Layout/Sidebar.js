@@ -1,10 +1,8 @@
 import React from 'react';
 import { RainbowButton } from '../ui/rainbow-button';
 import { RainbowCard } from '../ui/rainbow-card';
-import { useAuth } from '../../contexts/AuthContext';
 
 const Sidebar = ({ activeModule, onModuleChange }) => {
-  const { isAdmin } = useAuth();
   const menuItems = [
     {
       id: 'welcome',
@@ -47,18 +45,7 @@ const Sidebar = ({ activeModule, onModuleChange }) => {
       name: '番茄钟',
       icon: '🍅',
       description: '专注计时'
-    },
-    ...(isAdmin() ? [{
-      id: 'admin',
-      name: '管理面板',
-      icon: '🛠️',
-      description: '用户管理'
-    }, {
-      id: 'admin-setup',
-      name: '管理员设置',
-      icon: '⚙️',
-      description: '管理员权限配置'
-    }] : [])
+    }
   ];
 
   return (
