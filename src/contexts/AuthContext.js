@@ -26,6 +26,12 @@ export const AuthProvider = ({ children }) => {
       return
     }
 
+    // 设置加载超时
+    const loadingTimeout = setTimeout(() => {
+      console.warn('Auth loading timeout, setting loading to false')
+      setLoading(false)
+    }, 10000) // 10秒超时
+
     // 获取初始会话
     const getInitialSession = async () => {
       try {
@@ -43,13 +49,16 @@ export const AuthProvider = ({ children }) => {
               setTenant(tenantData)
             } catch (error) {
               console.error('Error getting tenant:', error)
+              // 即使租户获取失败，也不阻止用户登录
             }
           }
         }
       } catch (error) {
         console.error('Error initializing auth:', error)
+      } finally {
+        clearTimeout(loadingTimeout)
+        setLoading(false)
       }
-      setLoading(false)
     }
 
     getInitialSession()

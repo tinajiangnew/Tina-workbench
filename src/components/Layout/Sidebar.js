@@ -45,12 +45,6 @@ const Sidebar = ({ activeModule, onModuleChange }) => {
       name: '番茄钟',
       icon: '🍅',
       description: '专注计时'
-    },
-    {
-      id: 'aurora',
-      name: 'Aurora背景',
-      icon: '🌌',
-      description: '极光背景效果'
     }
   ];
 
@@ -70,14 +64,14 @@ const Sidebar = ({ activeModule, onModuleChange }) => {
             onClick={() => onModuleChange(item.id)}
             className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 group ${
               activeModule === item.id
-                ? 'bg-primary-50 text-primary-700 border border-primary-200'
-                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                ? 'bg-primary-50/20 text-white border border-primary-200/30'
+                : 'text-white hover:bg-white/10 hover:text-white'
             }`}
           >
             <span className="text-xl">{item.icon}</span>
             <div className="flex-1">
               <div className="font-medium">{item.name}</div>
-              <div className="text-xs text-gray-500 group-hover:text-gray-600">
+              <div className="text-xs text-gray-300 group-hover:text-gray-200">
                 {item.description}
               </div>
             </div>

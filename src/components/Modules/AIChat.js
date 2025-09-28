@@ -330,7 +330,7 @@ const AIChat = () => {
   const currentProvider = aiProviders[provider] || aiProviders.openai;
 
   return (
-    <div className="h-full flex">
+    <RainbowCard className="h-full flex !p-0">
       {/* 对话列表侧边栏 */}
       <RainbowCard className="w-80 flex flex-col !p-0">
         {/* 侧边栏头部 */}
@@ -652,7 +652,7 @@ const AIChat = () => {
           </RainbowCard>
         </div>
       )}
-    </div>
+    </RainbowCard>
   );
 };
 

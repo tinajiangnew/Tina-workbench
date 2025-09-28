@@ -5,7 +5,7 @@ import ProtectedRoute from './components/Auth/ProtectedRoute';
 import Header from './components/Layout/Header';
 import Sidebar from './components/Layout/Sidebar';
 import MainContent from './components/Layout/MainContent';
-import AnimatedBackground from './components/ui/animated-background';
+import { AuroraBackground } from './components/ui/aurora-background';
 import './App.css';
 
 function App() {
@@ -15,9 +15,8 @@ function App() {
   return (
     <AuthProvider>
       <DataProvider>
-        <div className="min-h-screen bg-gray-50">
-          <AnimatedBackground />
-          <div className="relative z-10">
+        <AuroraBackground className="min-h-screen">
+          <div className="relative z-10 min-h-screen">
             <ProtectedRoute>
               <Header 
                 onOpenSettings={() => setShowSettings(true)}
@@ -36,7 +35,7 @@ function App() {
               </div>
             </ProtectedRoute>
           </div>
-        </div>
+        </AuroraBackground>
       </DataProvider>
     </AuthProvider>
   );

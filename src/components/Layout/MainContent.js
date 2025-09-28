@@ -1,12 +1,23 @@
-import React from 'react';
-import Notepad from '../Modules/Notepad';
-import TodoList from '../Modules/TodoList';
-import AIChat from '../Modules/AIChat';
-import PomodoroTimer from '../Modules/PomodoroTimer';
-import TaskManager from '../Modules/TaskManager';
-import ProgressMonitor from '../Modules/ProgressMonitor';
+import React, { Suspense, lazy } from 'react';
 import { RainbowCard } from '../ui/rainbow-card';
-import { AuroraBackgroundDemo } from '../ui/aurora-background-demo.tsx';
+
+// 懒加载组件
+const Notepad = lazy(() => import('../Modules/Notepad'));
+const TodoList = lazy(() => import('../Modules/TodoList'));
+const AIChat = lazy(() => import('../Modules/AIChat'));
+const PomodoroTimer = lazy(() => import('../Modules/PomodoroTimer'));
+const TaskManager = lazy(() => import('../Modules/TaskManager'));
+const ProgressMonitor = lazy(() => import('../Modules/ProgressMonitor'));
+
+// 加载组件
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center h-64">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+      <p className="text-gray-600">加载中...</p>
+    </div>
+  </div>
+);
 
 const MainContent = ({ activeModule }) => {
   const renderContent = () => {
@@ -63,19 +74,42 @@ const MainContent = ({ activeModule }) => {
           </div>
         );
       case 'notes':
-        return <Notepad />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <Notepad />
+          </Suspense>
+        );
       case 'todos':
-        return <TodoList />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <TodoList />
+          </Suspense>
+        );
       case 'tasks':
-        return <TaskManager />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <TaskManager />
+          </Suspense>
+        );
       case 'progress':
-        return <ProgressMonitor />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <ProgressMonitor />
+          </Suspense>
+        );
       case 'chat':
-        return <AIChat />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <AIChat />
+          </Suspense>
+        );
       case 'pomodoro':
-        return <PomodoroTimer />;
-      case 'aurora':
-        return <AuroraBackgroundDemo />;
+        return (
+          <Suspense fallback={<LoadingSpinner />}>
+            <PomodoroTimer />
+          </Suspense>
+        );
+
       default:
         return (
           <div className="p-8 text-center">
@@ -89,13 +123,8 @@ const MainContent = ({ activeModule }) => {
   return (
     <main className="flex-1 overflow-hidden">
       <div className="h-full">
-        {activeModule === 'aurora' ? (
-          // Aurora module takes full screen without RainbowCard wrapper
+        {activeModule === 'notes' || activeModule === 'chat' ? (
           renderContent()
-        ) : activeModule === 'notes' || activeModule === 'chat' ? (
-          <RainbowCard className="h-full overflow-hidden">
-            {renderContent()}
-          </RainbowCard>
         ) : (
           <div className="h-full p-6">
             <RainbowCard className="h-full overflow-y-auto">

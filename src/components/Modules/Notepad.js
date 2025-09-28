@@ -93,7 +93,7 @@ const Notepad = () => {
   const activeNote = notes.find(note => note.id === activeNoteId);
 
   return (
-    <div className="h-full flex">
+    <RainbowCard className="h-full flex !p-0">
       {/* 笔记列表 */}
       <RainbowCard className="w-80 flex flex-col !rounded-none !border-r-0">
         {/* 列表头部 */}
@@ -242,7 +242,7 @@ const Notepad = () => {
           </div>
         )}
       </div>
-    </div>
+    </RainbowCard>
   );
 };
 
