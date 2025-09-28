@@ -35,7 +35,9 @@ pids
 # MCP sensitive configuration (keep structure but ignore tokens)
 .env.local
 .trae/mcp_servers.json
+.trae/.env.mcp
 
 # OS generated files
 Thumbs.db
 ehthumbs.db
+.vercel

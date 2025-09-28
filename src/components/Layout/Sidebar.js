@@ -53,6 +53,11 @@ const Sidebar = ({ activeModule, onModuleChange }) => {
       name: '管理面板',
       icon: '🛠️',
       description: '用户管理'
+    }, {
+      id: 'admin-setup',
+      name: '管理员设置',
+      icon: '⚙️',
+      description: '管理员权限配置'
     }] : [])
   ];
 

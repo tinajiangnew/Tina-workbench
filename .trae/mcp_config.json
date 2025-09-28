@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase",
+        "--read-only",
+        "--project-ref=supqfaoyuoswfthddrue"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "sbp_aa87198ee3014d31c39b18815b393ca2dc78e501"
+      }
+    }
+  },
+  "metadata": {
+    "projectName": "personal-workspace",
+    "description": "Project-specific Supabase MCP configuration for personal workspace",
+    "version": "1.0.0",
+    "operatingSystem": "Windows",
+    "configuredAt": "2024-12-19",
+    "mode": "read-only",
+    "projectRef": "supqfaoyuoswfthddrue"
+  }
+}

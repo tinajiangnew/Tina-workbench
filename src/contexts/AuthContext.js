@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { authService, onAuthStateChange, USER_ROLES } from '../lib/supabase';
+import { enforceAdminSecurity } from '../utils/adminSetup';
 
 // 创建认证上下文
 const AuthContext = createContext({});
@@ -25,6 +26,15 @@ export const AuthProvider = ({ children }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      
+      // 如果用户已登录，执行管理员安全检查
+      if (session?.user) {
+        try {
+          await enforceAdminSecurity();
+        } catch (error) {
+          console.error('管理员安全检查失败:', error);
+        }
+      }
     });
 
     // 初始化时获取当前用户

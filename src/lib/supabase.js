@@ -1,17 +1,23 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase配置
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://supqfaoyuoswfthddrue.supabase.co';
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1cHFmYW95dW9zd2Z0aGRkcnVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwMjY5MzQsImV4cCI6MjA3NDYwMjkzNH0.Ej8Ej8Ej8Ej8Ej8Ej8Ej8Ej8Ej8Ej8Ej8Ej8Ej8';
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+
+// 检查必需的环境变量
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Missing Supabase configuration. Please check your .env.local file.');
+  console.error('Required variables: REACT_APP_SUPABASE_URL, REACT_APP_SUPABASE_ANON_KEY');
+}
 
 // 创建Supabase客户端
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true
   }
-});
+}) : null;
 
 // 用户角色常量
 export const USER_ROLES = {
@@ -33,6 +39,13 @@ export const hasPermission = (userRole, requiredRole) => {
 export const authService = {
   // 注册用户
   async signUp(email, password, userData = {}) {
+    if (!supabase) {
+      return { 
+        data: null, 
+        error: { message: 'Supabase not configured. Please check your environment variables.' } 
+      };
+    }
+    
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -55,6 +68,13 @@ export const authService = {
 
   // 登录用户
   async signIn(email, password) {
+    if (!supabase) {
+      return { 
+        data: null, 
+        error: { message: 'Supabase not configured. Please check your environment variables.' } 
+      };
+    }
+    
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -70,6 +90,10 @@ export const authService = {
 
   // 登出用户
   async signOut() {
+    if (!supabase) {
+      return { error: { message: 'Supabase not configured.' } };
+    }
+    
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
@@ -81,6 +105,10 @@ export const authService = {
 
   // 获取当前用户
   async getCurrentUser() {
+    if (!supabase) {
+      return { user: null, error: { message: 'Supabase not configured.' } };
+    }
+    
     try {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error) throw error;
@@ -92,6 +120,10 @@ export const authService = {
 
   // 重置密码
   async resetPassword(email) {
+    if (!supabase) {
+      return { error: { message: 'Supabase not configured.' } };
+    }
+    
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`
@@ -105,6 +137,10 @@ export const authService = {
 
   // 更新用户信息
   async updateUser(updates) {
+    if (!supabase) {
+      return { data: null, error: { message: 'Supabase not configured.' } };
+    }
+    
     try {
       const { data, error } = await supabase.auth.updateUser(updates);
       if (error) throw error;
@@ -117,5 +153,9 @@ export const authService = {
 
 // 监听认证状态变化
 export const onAuthStateChange = (callback) => {
+  if (!supabase) {
+    console.error('Supabase not configured. Cannot listen to auth state changes.');
+    return { data: { subscription: { unsubscribe: () => {} } } };
+  }
   return supabase.auth.onAuthStateChange(callback);
 };

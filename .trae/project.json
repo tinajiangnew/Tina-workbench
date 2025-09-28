@@ -1,0 +1,29 @@
+{
+  "name": "personal-workspace",
+  "type": "react-app",
+  "description": "个人高效网页版工作台 - 集成记事本、待办事项、AI对话、番茄钟功能",
+  "version": "1.0.0",
+  "mcp": {
+    "enabled": true,
+    "configFile": ".trae/mcp_servers.json",
+    "servers": {
+      "supabase": {
+        "enabled": true,
+        "readonly": true,
+        "projectRef": "supqfaoyuoswfthddrue"
+      }
+    }
+  },
+  "environment": {
+    "development": {
+      "envFile": ".env.local"
+    }
+  },
+  "integrations": {
+    "supabase": {
+      "enabled": true,
+      "projectRef": "supqfaoyuoswfthddrue",
+      "mode": "readonly"
+    }
+  }
+}

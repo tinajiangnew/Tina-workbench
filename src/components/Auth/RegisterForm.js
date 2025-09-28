@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { EyeIcon, EyeOffIcon, UserPlusIcon, LogInIcon } from 'lucide-react';
 import { RainbowButton } from '../ui/rainbow-button';
-import { RainbowCard, RainbowInput, RainbowSelect } from '../ui/rainbow-card';
+import { RainbowCard, RainbowInput } from '../ui/rainbow-card';
 import { useAuth } from '../../contexts/AuthContext';
 import { USER_ROLES } from '../../lib/supabase';
+import { validateRegistrationData } from '../../utils/permissionValidator';
 
 const RegisterForm = ({ onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: '',
-    confirmPassword: '',
-    role: USER_ROLES.USER
+    confirmPassword: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -64,9 +64,22 @@ const RegisterForm = ({ onSwitchToLogin }) => {
     setIsLoading(true);
 
     try {
-      const { data, error } = await signUp(formData.email, formData.password, {
-        fullName: formData.fullName,
-        role: formData.role
+      // 验证注册数据安全性
+      const validationResult = validateRegistrationData({
+        ...formData,
+        role: USER_ROLES.USER
+      });
+
+      if (!validationResult.isValid) {
+        setError('注册数据验证失败');
+        setIsLoading(false);
+        return;
+      }
+
+      // 使用验证后的安全数据进行注册
+      const { data, error } = await signUp(validationResult.sanitizedData.email, validationResult.sanitizedData.password, {
+        fullName: validationResult.sanitizedData.fullName,
+        role: validationResult.sanitizedData.role
       });
       
       if (error) {
@@ -78,8 +91,7 @@ const RegisterForm = ({ onSwitchToLogin }) => {
           fullName: '',
           email: '',
           password: '',
-          confirmPassword: '',
-          role: USER_ROLES.USER
+          confirmPassword: ''
         });
       }
     } catch (err) {
@@ -157,22 +169,7 @@ const RegisterForm = ({ onSwitchToLogin }) => {
           />
         </div>
 
-        <div>
-          <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
-            用户类型
-          </label>
-          <RainbowSelect
-            id="role"
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            className="w-full"
-            disabled={isLoading}
-          >
-            <option value={USER_ROLES.USER}>普通用户</option>
-            <option value={USER_ROLES.ADMIN}>管理员</option>
-          </RainbowSelect>
-        </div>
+
 
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">

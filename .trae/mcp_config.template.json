@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase",
+        "--read-only",
+        "--project-ref=${SUPABASE_PROJECT_REF}"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}"
+      }
+    }
+  },
+  "metadata": {
+    "projectName": "personal-workspace",
+    "description": "Project-specific Supabase MCP configuration template for personal workspace",
+    "version": "1.0.0",
+    "operatingSystem": "Windows",
+    "configuredAt": "2024-12-19",
+    "mode": "read-only",
+    "note": "This is a template file. Copy to mcp_config.json and replace ${VARIABLE} with actual values."
+  }
+}
