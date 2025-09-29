@@ -26,50 +26,70 @@ export const AuthProvider = ({ children }) => {
       return
     }
 
-    // 设置加载超时 - 减少到5秒
+    let isMounted = true
+    
+    // 设置快速超时 - 减少到2秒
     const loadingTimeout = setTimeout(() => {
-      console.warn('Auth loading timeout, setting loading to false')
-      setLoading(false)
-    }, 5000) // 5秒超时
+      if (isMounted) {
+        console.warn('Auth loading timeout, setting loading to false')
+        setLoading(false)
+      }
+    }, 2000) // 2秒快速超时
 
-    // 获取初始会话
+    // 获取初始会话 - 优化版本
     const getInitialSession = async () => {
       try {
-        // 添加网络超时检查
+        // 更短的网络超时检查 - 1.5秒
         const sessionPromise = supabase.auth.getSession()
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Network timeout')), 3000)
+          setTimeout(() => reject(new Error('Network timeout')), 1500)
         )
         
         const { data: { session }, error } = await Promise.race([sessionPromise, timeoutPromise])
         
+        if (!isMounted) return
+        
         if (error) {
           console.error('Error getting session:', error)
-          // 网络错误时，直接设置为未登录状态
           setSession(null)
           setUser(null)
+          setTenant(null)
         } else {
           setSession(session)
           setUser(session?.user ?? null)
           
-          // 如果有用户，获取租户信息
+          // 异步获取租户信息，不阻塞登录流程
           if (session?.user) {
-            try {
-              const tenantData = await getCurrentTenant()
-              setTenant(tenantData)
-            } catch (error) {
-              console.error('Error getting tenant:', error)
-              // 即使租户获取失败，也不阻止用户登录
-            }
+            // 立即设置loading为false，让用户先进入应用
+            setLoading(false)
+            clearTimeout(loadingTimeout)
+            
+            // 后台异步获取租户信息
+            getCurrentTenant()
+              .then(tenantData => {
+                if (isMounted) {
+                  setTenant(tenantData)
+                }
+              })
+              .catch(error => {
+                console.error('Error getting tenant:', error)
+                if (isMounted) {
+                  setTenant(null)
+                }
+              })
+            return // 提前返回，避免重复设置loading
           }
         }
       } catch (error) {
         console.error('Error initializing auth:', error)
-        // 发生任何错误时，设置为未登录状态
-        setSession(null)
-        setUser(null)
-        setTenant(null)
-      } finally {
+        if (isMounted) {
+          setSession(null)
+          setUser(null)
+          setTenant(null)
+        }
+      }
+      
+      if (isMounted) {
         clearTimeout(loadingTimeout)
         setLoading(false)
       }
@@ -77,29 +97,40 @@ export const AuthProvider = ({ children }) => {
 
     getInitialSession()
 
-    // 监听认证状态变化
+    // 监听认证状态变化 - 优化版本
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!isMounted) return
+        
         setSession(session)
         setUser(session?.user ?? null)
+        setLoading(false) // 立即停止加载状态
         
+        // 异步处理租户信息
         if (session?.user) {
-          try {
-            const tenantData = await getCurrentTenant()
-            setTenant(tenantData)
-          } catch (error) {
-            console.error('Error getting tenant:', error)
-            setTenant(null)
-          }
+          getCurrentTenant()
+            .then(tenantData => {
+              if (isMounted) {
+                setTenant(tenantData)
+              }
+            })
+            .catch(error => {
+              console.error('Error getting tenant:', error)
+              if (isMounted) {
+                setTenant(null)
+              }
+            })
         } else {
           setTenant(null)
         }
-        
-        setLoading(false)
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => {
+      isMounted = false
+      clearTimeout(loadingTimeout)
+      subscription.unsubscribe()
+    }
   }, [])
 
   // 注册函数
