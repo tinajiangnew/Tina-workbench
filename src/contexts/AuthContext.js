@@ -144,11 +144,21 @@ export const AuthProvider = ({ children }) => {
   // 登出函数
   const signOut = async () => {
     try {
+      setLoading(true)
       const { error } = await supabase.auth.signOut()
       if (error) throw error
+      
+      // 清理本地状态
+      setUser(null)
+      setTenant(null)
+      setSession(null)
+      
       return { error: null }
     } catch (error) {
+      console.error('Sign out error:', error)
       return { error }
+    } finally {
+      setLoading(false)
     }
   }
 

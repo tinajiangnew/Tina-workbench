@@ -2,12 +2,25 @@ import React, { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 
 const UserProfile = () => {
-  const { user, tenant, signOut } = useAuth()
+  const { user, tenant, signOut, loading } = useAuth()
   const [showDropdown, setShowDropdown] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
 
   const handleSignOut = async () => {
-    await signOut()
-    setShowDropdown(false)
+    try {
+      setSigningOut(true)
+      const { error } = await signOut()
+      if (error) {
+        console.error('退出登录失败:', error)
+        alert('退出登录失败，请重试')
+      }
+    } catch (err) {
+      console.error('退出登录异常:', err)
+      alert('退出登录失败，请重试')
+    } finally {
+      setSigningOut(false)
+      setShowDropdown(false)
+    }
   }
 
   if (!user) return null
@@ -64,9 +77,10 @@ const UserProfile = () => {
             <div className="border-t border-gray-100 mt-2 pt-2">
               <button
                 onClick={handleSignOut}
-                className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md"
+                disabled={signingOut || loading}
+                className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                退出登录
+                {signingOut ? '退出中...' : '退出登录'}
               </button>
             </div>
           </div>
