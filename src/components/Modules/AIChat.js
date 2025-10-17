@@ -184,35 +184,54 @@ const AIChat = () => {
   // 调用AI API
   const callAIAPI = async (messages) => {
     try {
-      const endpoint = getCurrentEndpoint();
-      if (!endpoint) {
-        throw new Error('API端点未配置');
+      // 如果是自定义服务，仍然直连自定义端点
+      if (provider === 'custom') {
+        const endpoint = getCurrentEndpoint();
+        if (!endpoint) throw new Error('API端点未配置');
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model,
+            messages: messages.map(msg => ({ role: msg.role, content: msg.content })),
+            max_tokens: 1000,
+            temperature: 0.7
+          })
+        });
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(`API调用失败: ${response.status} - ${errorData.error?.message || errorData.message || '未知错误'}`);
+        }
+        const data = await response.json();
+        return data.choices?.[0]?.message?.content ?? '';
       }
 
-      const response = await fetch(endpoint, {
+      // 其他provider通过后端代理，解决浏览器跨域与网络限制
+      const response = await fetch('/api/ai-chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: model,
-          messages: messages.map(msg => ({
-            role: msg.role,
-            content: msg.content
-          })),
-          max_tokens: 1000,
-          temperature: 0.7
+          provider,
+          model,
+          messages: messages.map(msg => ({ role: msg.role, content: msg.content })),
+          // 可选：传入前端配置的apiKey（如未在Vercel配置环境变量）
+          apiKey: apiKey || undefined
         })
       });
 
+      const text = await response.text();
+      let data;
+      try { data = JSON.parse(text); } catch { data = { raw: text }; }
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`API调用失败: ${response.status} - ${errorData.error?.message || errorData.message || '未知错误'}`);
+        const errMsg = data?.error?.message || `HTTP ${response.status}`;
+        throw new Error(errMsg);
       }
 
-      const data = await response.json();
-      return data.choices[0].message.content;
+      return data?.content ?? '';
     } catch (error) {
       console.error('AI API调用错误:', error);
       throw error;
