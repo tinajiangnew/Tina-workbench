@@ -168,6 +168,36 @@ export const AuthProvider = ({ children }) => {
       if (error) throw error
       return { data, error: null }
     } catch (error) {
+      // 网络错误回退到后端代理
+      const msg = (error?.message || '').toLowerCase()
+      const isNetworkError = msg.includes('failed to fetch') || msg.includes('network') || msg.includes('timeout')
+      if (isNetworkError) {
+        try {
+          const resp = await fetch('/api/auth/signin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          })
+          const text = await resp.text()
+          let result
+          try { result = JSON.parse(text) } catch { result = { raw: text } }
+          if (!resp.ok) {
+            const errMsg = result?.error?.message || result?.message || `HTTP ${resp.status}`
+            throw new Error(errMsg)
+          }
+          const { access_token, refresh_token, user: apiUser } = result
+          if (!access_token || !refresh_token) {
+            throw new Error('登录代理返回的令牌无效')
+          }
+          await supabase.auth.setSession({ access_token, refresh_token })
+          const { data: userRes } = await supabase.auth.getUser()
+          setUser(userRes?.user ?? apiUser ?? null)
+          setSession({ access_token, refresh_token, user: userRes?.user ?? apiUser ?? null })
+          return { data: { session: { access_token, refresh_token, user: userRes?.user ?? apiUser ?? null } }, error: null }
+        } catch (proxyErr) {
+          return { data: null, error: proxyErr }
+        }
+      }
       return { data: null, error }
     }
   }
